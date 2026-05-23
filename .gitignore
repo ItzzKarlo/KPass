@@ -1,20 +1,7 @@
-# Secrets
 .env
-.jsonc
-
-# venv
-venv/
-venv/*
-
-# pycache
-*.pyc
-*.pyo
-__pycache__/*
-
-# User Data
 *.db
-
-# Node
-node_modules/*
-*/node_modules/*
-*/node_modules
+venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
