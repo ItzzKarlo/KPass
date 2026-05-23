@@ -7,6 +7,7 @@ Security notes:
 
 - Account passwords are hashed with bcrypt through Passlib.
 - Saved website passwords are encrypted with Fernet before they are stored.
+- A separate master password is required before saved website passwords can be revealed.
 - `JWT_SECRET_KEY` and `FERNET_KEY` must come from environment variables or a server-only `.env` file.
 - Do not commit `.env`, database files, virtual environments, private keys, or generated caches.
 

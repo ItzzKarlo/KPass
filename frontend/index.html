@@ -1,19 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>KPass</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPass | Self-hosted password vault</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="page">
-    <div class="card">
-      <div class="logo">KPass</div>
-      <div class="subtitle">Your private password vault.</div>
+  <header class="topbar">
+    <a class="brand" href="index.html">KPass</a>
+    <nav class="topnav">
+      <a href="#security">Security</a>
+      <a href="#hosting">Hosting</a>
+      <button class="theme-toggle" data-theme-toggle type="button">Dark</button>
+      <a href="login.html">Login</a>
+      <a class="nav-cta" href="register.html">Create Account</a>
+    </nav>
+  </header>
 
-      <button onclick="window.location.href='login.html'">Login</button>
-      <br><br>
-      <button class="secondary-btn" onclick="window.location.href='register.html'">Create Account</button>
-    </div>
-  </div>
+  <main>
+    <section class="hero">
+      <img class="hero-image" src="assets/kpass-hero.png" alt="Secure digital vault interface">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Self-hosted password manager</p>
+        <h1>KPass</h1>
+        <p class="hero-copy">
+          Keep login credentials inside your own infrastructure, with encrypted website passwords,
+          account login protection, and a master-password gate before secrets are revealed.
+        </p>
+        <div class="hero-actions">
+          <a class="button-link primary" href="register.html">Start Your Vault</a>
+          <a class="button-link secondary" href="login.html">Open Login</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-band" id="security">
+      <div class="section-heading">
+        <p class="eyebrow">Security model</p>
+        <h2>Built around secrets staying secret.</h2>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span class="feature-icon">01</span>
+          <h3>Hashed accounts</h3>
+          <p>Your account password is hashed before storage and never saved in plain text.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon">02</span>
+          <h3>Encrypted entries</h3>
+          <p>Website passwords are encrypted in the database with a server-side Fernet key.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon">03</span>
+          <h3>Master unlock</h3>
+          <p>Saved passwords stay hidden until your session has been unlocked with a separate master password.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="split-band" id="hosting">
+      <div>
+        <p class="eyebrow">Deployment ready</p>
+        <h2>Designed for your Ubuntu VM and Cloudflare Tunnel path.</h2>
+        <p>
+          Run the FastAPI backend on your local-network Ubuntu server, serve the static frontend,
+          and expose the app through Cloudflare Tunnel when you are ready for public access.
+        </p>
+      </div>
+      <div class="hosting-panel">
+        <div><strong>Backend</strong><span>FastAPI + SQLite now, expandable later</span></div>
+        <div><strong>Frontend</strong><span>Static HTML, CSS, and JavaScript</span></div>
+        <div><strong>Secrets</strong><span>Environment-only keys, outside Git</span></div>
+      </div>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
 </body>
 </html>

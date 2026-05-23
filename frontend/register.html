@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <button class="theme-toggle auth-theme-toggle" data-theme-toggle type="button">Dark</button>
   <div class="page">
     <div class="card">
       <div class="logo">KPass</div>
@@ -13,7 +14,8 @@
       <form id="registerForm">
         <input type="email" id="email" placeholder="Email" required>
         <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
+        <input type="password" id="password" placeholder="Login Password" required>
+        <input type="password" id="masterPassword" placeholder="Master Password" required>
         <button type="submit">Register</button>
       </form>
 
@@ -37,7 +39,8 @@
           body: JSON.stringify({
             email: document.getElementById("email").value,
             username: document.getElementById("username").value,
-            password: document.getElementById("password").value
+            password: document.getElementById("password").value,
+            master_password: document.getElementById("masterPassword").value
           })
         });
 

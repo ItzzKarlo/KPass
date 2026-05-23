@@ -6,43 +6,173 @@
   <title>Vault | KPass</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <div class="vault-page">
-    <div class="navbar">
-      <div class="logo">KPass</div>
-      <button onclick="logout()">Logout</button>
+<body class="app-body">
+  <aside class="sidebar">
+    <a class="brand sidebar-brand" href="index.html">KPass</a>
+    <button class="section-item active" data-section="All">All entries</button>
+    <div class="section-label">Sections</div>
+    <div id="sectionList" class="section-list"></div>
+    <button class="section-add" id="quickSectionButton">+ Section</button>
+  </aside>
+
+  <main class="vault-shell">
+    <header class="vault-header">
+      <div>
+        <p class="eyebrow">Vault</p>
+        <h1 id="vaultTitle">All entries</h1>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" data-theme-toggle type="button">Dark</button>
+        <div class="profile-menu">
+          <button class="profile-button" id="profileButton" type="button">
+            <span id="profileInitial">U</span>
+          </button>
+          <div class="profile-dropdown hidden" id="profileDropdown">
+            <button type="button" id="openProfileButton">Profile</button>
+            <button type="button" id="openSettingsButton">Settings</button>
+            <button type="button" onclick="logout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="vaultList" class="vault-list"></div>
+  </main>
+
+  <button class="fab" id="openEntryModal" aria-label="Add password">+</button>
+
+  <div class="modal-backdrop hidden" id="entryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="formTitle">Add password</h2>
+        <button class="icon-button" id="closeEntryModal" type="button">x</button>
+      </div>
+
+      <form id="passwordForm">
+        <input type="hidden" id="entryId">
+        <label>
+          Website name
+          <input type="text" id="websiteName" required>
+        </label>
+        <label>
+          Section
+          <input type="text" id="sectionName" list="sectionsDataList" placeholder="Private" required>
+          <datalist id="sectionsDataList"></datalist>
+        </label>
+        <label>
+          Website URL
+          <input type="url" id="websiteUrl">
+        </label>
+        <label>
+          Website email
+          <input type="email" id="websiteEmail">
+        </label>
+        <label>
+          Website username
+          <input type="text" id="websiteUsername">
+        </label>
+        <label>
+          Website password
+          <input type="password" id="websitePassword" required>
+        </label>
+
+        <button type="submit" id="saveButton">Save Password</button>
+      </form>
+
+      <div id="message" class="message"></div>
     </div>
+  </div>
 
-    <div class="vault-grid">
-      <div class="card">
-        <div class="subtitle" id="formTitle">Add password</div>
+  <div class="modal-backdrop hidden" id="masterModal">
+    <div class="modal compact-modal">
+      <div class="modal-header">
+        <h2>Master unlock</h2>
+        <button class="icon-button" id="closeMasterModal" type="button">x</button>
+      </div>
+      <p class="modal-copy" id="masterModalCopy">Enter your master password to reveal saved passwords during this browser session.</p>
+      <form id="masterForm">
+        <input class="hidden" type="password" id="loginPasswordInput" placeholder="Login Password">
+        <input type="password" id="masterPasswordInput" placeholder="Master Password" required>
+        <button type="submit">Unlock</button>
+      </form>
+      <div id="masterMessage" class="message"></div>
+    </div>
+  </div>
 
-        <form id="passwordForm">
-          <input type="hidden" id="entryId">
-          <input type="text" id="websiteName" placeholder="Website Name" required>
-          <input type="url" id="websiteUrl" placeholder="Website URL">
-          <input type="email" id="websiteEmail" placeholder="Website Email">
-          <input type="text" id="websiteUsername" placeholder="Website Username">
-          <input type="password" id="websitePassword" placeholder="Website Password" required>
+  <div class="modal-backdrop hidden" id="settingsModal">
+    <div class="modal settings-modal">
+      <div class="modal-header">
+        <h2 id="settingsTitle">Profile</h2>
+        <button class="icon-button" id="closeSettingsModal" type="button">x</button>
+      </div>
 
-          <button type="submit" id="saveButton">Save Password</button>
-          <button type="button" class="secondary-btn hidden" id="cancelEditButton">Cancel Edit</button>
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-settings-tab="profile" type="button">Profile</button>
+        <button class="settings-tab" data-settings-tab="security" type="button">Security</button>
+        <button class="settings-tab danger-tab" data-settings-tab="danger" type="button">Danger Zone</button>
+      </div>
+
+      <section class="settings-panel" id="profilePanel">
+        <div class="profile-summary">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div>
+            <h3 id="profileUsername">User</h3>
+            <p id="profileEmail">user@example.com</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-panel hidden" id="securityPanel">
+        <div class="setting-block">
+          <div>
+            <h3>Two-factor authentication</h3>
+            <p>TOTP setup with QR code and verification will be added next.</p>
+          </div>
+          <button class="secondary-btn" type="button" disabled>Coming Soon</button>
+        </div>
+
+        <form class="setting-form" id="changePasswordForm">
+          <h3>Change login password</h3>
+          <input type="password" id="currentPasswordInput" placeholder="Current Password" required>
+          <input type="password" id="newPasswordInput" placeholder="New Login Password" required>
+          <button type="submit">Change Password</button>
         </form>
 
-        <div id="message" class="message"></div>
-      </div>
+        <form class="setting-form" id="resetMasterForm">
+          <h3>Reset master password</h3>
+          <input type="password" id="resetLoginPasswordInput" placeholder="Login Password" required>
+          <input type="password" id="newMasterPasswordInput" placeholder="New Master Password" required>
+          <button type="submit">Reset Master Password</button>
+        </form>
+      </section>
 
-      <div>
-        <h2>Your Vault</h2>
-        <div id="vaultList"></div>
-      </div>
+      <section class="settings-panel hidden" id="dangerPanel">
+        <div class="danger-zone">
+          <h3>Delete all stored data</h3>
+          <p>This deletes every saved password entry for your account. Your account remains active.</p>
+          <button class="danger-btn" id="deleteAllDataButton" type="button">Delete Stored Data</button>
+        </div>
+
+        <form class="danger-zone" id="deleteAccountForm">
+          <h3>Delete account</h3>
+          <p>This deletes your account and all saved data. This cannot be undone.</p>
+          <input type="password" id="deleteAccountPasswordInput" placeholder="Login Password" required>
+          <button class="danger-btn" type="submit">Delete Account</button>
+        </form>
+      </section>
+
+      <div id="settingsMessage" class="message"></div>
     </div>
   </div>
 
   <script src="js/api.js"></script>
   <script>
+    const DEFAULT_SECTIONS = ["Work", "Private", "Local", "Network"];
     const MASKED_PASSWORD = "********";
     let currentEntries = [];
+    let activeSection = "All";
+    let pendingReveal = null;
+    let currentUser = null;
 
     if (!getToken()) {
       window.location.href = "login.html";
@@ -50,47 +180,14 @@
 
     async function loadVault() {
       const vaultList = document.getElementById("vaultList");
-      vaultList.innerHTML = "Loading vault...";
+      vaultList.innerHTML = "<p class='empty-state'>Loading vault...</p>";
 
       try {
-        const entries = await apiRequest("/vault");
-        currentEntries = entries;
-
-        if (entries.length === 0) {
-          vaultList.innerHTML = "<p>No passwords saved yet.</p>";
-          return;
-        }
-
-        vaultList.innerHTML = entries.map(entry => `
-          <div class="password-card">
-            <h3>${escapeHtml(entry.website_name)}</h3>
-
-            <div class="password-row">
-              <strong>URL:</strong>
-              ${entry.website_url ? `<a class="link" href="${escapeAttr(entry.website_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(entry.website_url)}</a>` : "-"}
-            </div>
-
-            <div class="password-row">
-              <strong>Email:</strong> ${escapeHtml(entry.website_email || "-")}
-            </div>
-
-            <div class="password-row">
-              <strong>Username:</strong> ${escapeHtml(entry.website_username || "-")}
-            </div>
-
-            <div class="password-row">
-              <strong>Password:</strong>
-              <span id="password-${entry.id}" data-password="${escapeAttr(entry.website_password)}">${MASKED_PASSWORD}</span>
-            </div>
-
-            <div class="password-actions">
-              <button class="secondary-btn" onclick="togglePassword(${entry.id})">Show</button>
-              <button class="secondary-btn" onclick="copyPassword(${entry.id})">Copy</button>
-              <button class="secondary-btn" onclick="editEntry(${entry.id})">Edit</button>
-              <button class="danger-btn" onclick="deleteEntry(${entry.id})">Delete</button>
-            </div>
-          </div>
-        `).join("");
+        currentUser = await apiRequest("/auth/me");
+        currentEntries = await apiRequest("/vault");
+        renderUser();
+        renderSections();
+        renderVault();
       } catch (err) {
         vaultList.innerHTML = `<p class="error">${err.message}</p>`;
 
@@ -98,6 +195,77 @@
           logout();
         }
       }
+    }
+
+    function renderSections() {
+      const sections = getSections();
+      const sectionList = document.getElementById("sectionList");
+      const datalist = document.getElementById("sectionsDataList");
+
+      sectionList.innerHTML = sections.map(section => `
+        <button class="section-item ${activeSection === section ? "active" : ""}" data-section="${escapeAttr(section)}">
+          ${escapeHtml(section)}
+          <span>${currentEntries.filter(entry => entry.section === section).length}</span>
+        </button>
+      `).join("");
+
+      datalist.innerHTML = sections.map(section => `<option value="${escapeAttr(section)}"></option>`).join("");
+
+      document.querySelectorAll(".section-item").forEach(button => {
+        button.classList.toggle("active", button.dataset.section === activeSection);
+        button.onclick = () => {
+          activeSection = button.dataset.section;
+          renderSections();
+          renderVault();
+        };
+      });
+    }
+
+    function renderVault() {
+      const vaultList = document.getElementById("vaultList");
+      const title = document.getElementById("vaultTitle");
+      const entries = activeSection === "All"
+        ? currentEntries
+        : currentEntries.filter(entry => entry.section === activeSection);
+
+      title.textContent = activeSection === "All" ? "All entries" : activeSection;
+
+      if (entries.length === 0) {
+        vaultList.innerHTML = "<p class='empty-state'>No passwords saved in this section yet.</p>";
+        return;
+      }
+
+      vaultList.innerHTML = entries.map(entry => `
+        <article class="vault-card">
+          <div>
+            <p class="card-section">${escapeHtml(entry.section)}</p>
+            <h3>${escapeHtml(entry.website_name)}</h3>
+            <p>${escapeHtml(entry.website_username || entry.website_email || "No username")}</p>
+          </div>
+          <div class="password-preview">
+            <span id="password-${entry.id}">${MASKED_PASSWORD}</span>
+          </div>
+          <div class="vault-card-meta">
+            ${entry.website_url ? `<a class="link" href="${escapeAttr(entry.website_url)}" target="_blank" rel="noopener noreferrer">Visit</a>` : "<span>No URL</span>"}
+          </div>
+          <div class="hover-actions">
+            <button class="secondary-btn" onclick="showPassword(${entry.id})">Show</button>
+            <button class="secondary-btn" onclick="copyPassword(${entry.id})">Copy</button>
+            <button class="secondary-btn" onclick="editEntry(${entry.id})">Edit</button>
+            <button class="danger-btn" onclick="deleteEntry(${entry.id})">Delete</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderUser() {
+      if (!currentUser) return;
+
+      const initial = (currentUser.username || "U").slice(0, 1).toUpperCase();
+      document.getElementById("profileInitial").textContent = initial;
+      document.getElementById("profileAvatar").textContent = initial;
+      document.getElementById("profileUsername").textContent = currentUser.username;
+      document.getElementById("profileEmail").textContent = currentUser.email;
     }
 
     document.getElementById("passwordForm").addEventListener("submit", async (e) => {
@@ -111,23 +279,191 @@
       try {
         await apiRequest(entryId ? `/vault/${entryId}` : "/vault", {
           method: entryId ? "PUT" : "POST",
-          body: JSON.stringify({
-            website_name: document.getElementById("websiteName").value,
-            website_url: document.getElementById("websiteUrl").value || null,
-            website_email: document.getElementById("websiteEmail").value || null,
-            website_username: document.getElementById("websiteUsername").value || null,
-            website_password: document.getElementById("websitePassword").value
-          })
+          body: JSON.stringify(getFormPayload())
         });
 
-        resetForm();
-        message.textContent = entryId ? "Password updated." : "Password saved.";
-        loadVault();
+        closeEntryModal();
+        await loadVault();
       } catch (err) {
         message.className = "message error";
         message.textContent = err.message;
       }
     });
+
+    document.getElementById("masterForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const message = document.getElementById("masterMessage");
+      message.className = "message";
+      message.textContent = "Unlocking...";
+
+      try {
+        const setupMode = currentUser && !currentUser.has_master_password;
+        const data = await apiRequest(setupMode ? "/auth/master/setup" : "/auth/master/unlock", {
+          method: "POST",
+          body: JSON.stringify(setupMode ? {
+            login_password: document.getElementById("loginPasswordInput").value,
+            master_password: document.getElementById("masterPasswordInput").value
+          } : {
+            master_password: document.getElementById("masterPasswordInput").value
+          })
+        });
+
+        if (setupMode) {
+          currentUser.has_master_password = true;
+          const unlockData = await apiRequest("/auth/master/unlock", {
+            method: "POST",
+            body: JSON.stringify({
+              master_password: document.getElementById("masterPasswordInput").value
+            })
+          });
+          setMasterToken(unlockData.master_token);
+        } else {
+          setMasterToken(data.master_token);
+        }
+
+        closeMasterModal();
+
+        if (pendingReveal) {
+          const action = pendingReveal;
+          pendingReveal = null;
+          action();
+        }
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+
+    document.getElementById("changePasswordForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = document.getElementById("settingsMessage");
+      message.className = "message";
+      message.textContent = "Changing password...";
+
+      try {
+        await apiRequest("/auth/password/change", {
+          method: "POST",
+          body: JSON.stringify({
+            current_password: document.getElementById("currentPasswordInput").value,
+            new_password: document.getElementById("newPasswordInput").value
+          })
+        });
+        e.target.reset();
+        message.textContent = "Login password changed.";
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+
+    document.getElementById("resetMasterForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = document.getElementById("settingsMessage");
+      message.className = "message";
+      message.textContent = "Resetting master password...";
+
+      try {
+        await apiRequest("/auth/master/reset", {
+          method: "POST",
+          body: JSON.stringify({
+            login_password: document.getElementById("resetLoginPasswordInput").value,
+            new_master_password: document.getElementById("newMasterPasswordInput").value
+          })
+        });
+        sessionStorage.removeItem("kpass_master_token");
+        e.target.reset();
+        message.textContent = "Master password reset. Unlock again when revealing passwords.";
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+
+    document.getElementById("deleteAccountForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!confirm("Delete your account and all stored data? This cannot be undone.")) return;
+
+      const message = document.getElementById("settingsMessage");
+      message.className = "message";
+      message.textContent = "Deleting account...";
+
+      try {
+        await apiRequest("/auth/account", {
+          method: "DELETE",
+          body: JSON.stringify({
+            login_password: document.getElementById("deleteAccountPasswordInput").value
+          })
+        });
+        logout();
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+
+    function getFormPayload() {
+      return {
+        website_name: document.getElementById("websiteName").value,
+        section: document.getElementById("sectionName").value || "Private",
+        website_url: document.getElementById("websiteUrl").value || null,
+        website_email: document.getElementById("websiteEmail").value || null,
+        website_username: document.getElementById("websiteUsername").value || null,
+        website_password: document.getElementById("websitePassword").value
+      };
+    }
+
+    async function revealEntryPassword(id) {
+      try {
+        const data = await apiRequest(`/vault/${id}/reveal`, {
+          method: "POST",
+          body: JSON.stringify({ master_token: getMasterToken() })
+        });
+        return data.website_password;
+      } catch (err) {
+        if (err.message.includes("Master password")) {
+          sessionStorage.removeItem("kpass_master_token");
+          return null;
+        }
+        throw err;
+      }
+    }
+
+    async function showPassword(id) {
+      if (!getMasterToken()) {
+        pendingReveal = () => showPassword(id);
+        openMasterModal();
+        return;
+      }
+
+      const password = await revealEntryPassword(id);
+      if (!password) {
+        pendingReveal = () => showPassword(id);
+        openMasterModal();
+        return;
+      }
+
+      const el = document.getElementById(`password-${id}`);
+      el.textContent = el.textContent === MASKED_PASSWORD ? password : MASKED_PASSWORD;
+    }
+
+    async function copyPassword(id) {
+      if (!getMasterToken()) {
+        pendingReveal = () => copyPassword(id);
+        openMasterModal();
+        return;
+      }
+
+      const password = await revealEntryPassword(id);
+      if (!password) {
+        pendingReveal = () => copyPassword(id);
+        openMasterModal();
+        return;
+      }
+
+      await navigator.clipboard.writeText(password);
+      showToast("Password copied.");
+    }
 
     async function deleteEntry(id) {
       if (!confirm("Delete this password?")) return;
@@ -139,44 +475,103 @@
       loadVault();
     }
 
-    function editEntry(id) {
+    async function editEntry(id) {
       const entry = currentEntries.find(item => item.id === id);
       if (!entry) return;
 
+      if (!getMasterToken()) {
+        pendingReveal = () => editEntry(id);
+        openMasterModal();
+        return;
+      }
+
+      const password = await revealEntryPassword(id);
+      if (!password) {
+        pendingReveal = () => editEntry(id);
+        openMasterModal();
+        return;
+      }
+
+      openEntryModal("Edit password");
       document.getElementById("entryId").value = entry.id;
       document.getElementById("websiteName").value = entry.website_name;
+      document.getElementById("sectionName").value = entry.section;
       document.getElementById("websiteUrl").value = entry.website_url || "";
       document.getElementById("websiteEmail").value = entry.website_email || "";
       document.getElementById("websiteUsername").value = entry.website_username || "";
-      document.getElementById("websitePassword").value = entry.website_password;
-      document.getElementById("formTitle").textContent = "Edit password";
+      document.getElementById("websitePassword").value = password;
       document.getElementById("saveButton").textContent = "Update Password";
-      document.getElementById("cancelEditButton").classList.remove("hidden");
     }
 
-    function resetForm() {
+    function openEntryModal(title = "Add password") {
       document.getElementById("passwordForm").reset();
       document.getElementById("entryId").value = "";
-      document.getElementById("formTitle").textContent = "Add password";
+      document.getElementById("sectionName").value = activeSection === "All" ? "Private" : activeSection;
+      document.getElementById("formTitle").textContent = title;
       document.getElementById("saveButton").textContent = "Save Password";
-      document.getElementById("cancelEditButton").classList.add("hidden");
+      document.getElementById("message").textContent = "";
+      document.getElementById("entryModal").classList.remove("hidden");
     }
 
-    function togglePassword(id) {
-      const el = document.getElementById(`password-${id}`);
-      const realPassword = el.dataset.password;
-
-      if (el.textContent === MASKED_PASSWORD) {
-        el.textContent = realPassword;
-      } else {
-        el.textContent = MASKED_PASSWORD;
-      }
+    function closeEntryModal() {
+      document.getElementById("entryModal").classList.add("hidden");
     }
 
-    async function copyPassword(id) {
-      const el = document.getElementById(`password-${id}`);
-      await navigator.clipboard.writeText(el.dataset.password);
-      alert("Password copied.");
+    function openMasterModal() {
+      const setupMode = currentUser && !currentUser.has_master_password;
+      document.getElementById("masterPasswordInput").value = "";
+      document.getElementById("loginPasswordInput").value = "";
+      document.getElementById("loginPasswordInput").classList.toggle("hidden", !setupMode);
+      document.getElementById("loginPasswordInput").required = setupMode;
+      document.getElementById("masterModalCopy").textContent = setupMode
+        ? "This account needs a master password. Confirm your login password, then choose a different master password."
+        : "Enter your master password to reveal saved passwords during this browser session.";
+      document.getElementById("masterMessage").textContent = "";
+      document.getElementById("masterModal").classList.remove("hidden");
+      document.getElementById(setupMode ? "loginPasswordInput" : "masterPasswordInput").focus();
+    }
+
+    function closeMasterModal() {
+      document.getElementById("masterModal").classList.add("hidden");
+    }
+
+    function openSettings(tab = "profile") {
+      document.getElementById("settingsModal").classList.remove("hidden");
+      setSettingsTab(tab);
+      document.getElementById("profileDropdown").classList.add("hidden");
+      document.getElementById("settingsMessage").textContent = "";
+    }
+
+    function closeSettings() {
+      document.getElementById("settingsModal").classList.add("hidden");
+    }
+
+    function setSettingsTab(tab) {
+      const titles = {
+        profile: "Profile",
+        security: "Settings",
+        danger: "Danger Zone"
+      };
+
+      document.getElementById("settingsTitle").textContent = titles[tab];
+      document.querySelectorAll(".settings-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.settingsTab === tab);
+      });
+      document.querySelectorAll(".settings-panel").forEach(panel => {
+        panel.classList.add("hidden");
+      });
+      document.getElementById(`${tab}Panel`).classList.remove("hidden");
+    }
+
+    function getSections() {
+      const savedSections = currentEntries.map(entry => entry.section || "Private");
+      return [...new Set([...DEFAULT_SECTIONS, ...savedSections])].sort();
+    }
+
+    function showToast(text) {
+      const message = document.getElementById("message");
+      message.className = "message";
+      message.textContent = text;
     }
 
     function escapeHtml(value) {
@@ -192,7 +587,44 @@
       return escapeHtml(value);
     }
 
-    document.getElementById("cancelEditButton").addEventListener("click", resetForm);
+    document.getElementById("openEntryModal").addEventListener("click", () => openEntryModal());
+    document.getElementById("closeEntryModal").addEventListener("click", closeEntryModal);
+    document.getElementById("closeMasterModal").addEventListener("click", closeMasterModal);
+    document.getElementById("closeSettingsModal").addEventListener("click", closeSettings);
+    document.getElementById("profileButton").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.toggle("hidden");
+    });
+    document.getElementById("openProfileButton").addEventListener("click", () => openSettings("profile"));
+    document.getElementById("openSettingsButton").addEventListener("click", () => openSettings("security"));
+    document.querySelectorAll(".settings-tab").forEach(button => {
+      button.addEventListener("click", () => setSettingsTab(button.dataset.settingsTab));
+    });
+    document.getElementById("deleteAllDataButton").addEventListener("click", async () => {
+      if (!confirm("Delete all stored password entries? Your account will stay active.")) return;
+
+      const message = document.getElementById("settingsMessage");
+      message.className = "message";
+      message.textContent = "Deleting stored data...";
+
+      try {
+        await apiRequest("/vault", { method: "DELETE" });
+        sessionStorage.removeItem("kpass_master_token");
+        currentEntries = [];
+        renderSections();
+        renderVault();
+        message.textContent = "Stored data deleted.";
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+    document.getElementById("quickSectionButton").addEventListener("click", () => {
+      const name = prompt("Section name");
+      if (!name) return;
+      activeSection = name.trim();
+      openEntryModal();
+    });
+
     loadVault();
   </script>
 </body>

@@ -14,8 +14,41 @@ function setToken(token) {
 
 function logout() {
     localStorage.removeItem("kpass_token");
+    sessionStorage.removeItem("kpass_master_token");
     window.location.href = "login.html";
 }
+
+function getMasterToken() {
+    return sessionStorage.getItem("kpass_master_token");
+}
+
+function setMasterToken(token) {
+    sessionStorage.setItem("kpass_master_token", token);
+}
+
+function getTheme() {
+    return localStorage.getItem("kpass_theme") || "light";
+}
+
+function applyTheme(theme = getTheme()) {
+    document.body.classList.toggle("dark-mode", theme === "dark");
+    localStorage.setItem("kpass_theme", theme);
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+        button.textContent = theme === "dark" ? "Light" : "Dark";
+        button.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
+    });
+}
+
+function toggleTheme() {
+    applyTheme(getTheme() === "dark" ? "light" : "dark");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    applyTheme();
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+        button.addEventListener("click", toggleTheme);
+    });
+});
 
 async function apiRequest(path, options = {}) {
     const headers = {

@@ -11,6 +11,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    master_password_hash = Column(String, nullable=True)
     two_factor_enabled = Column(Boolean, default=False, nullable=False)
     two_factor_secret = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -26,6 +27,7 @@ class PasswordEntry(Base):
     website_email = Column(String, nullable=True)
     website_username = Column(String, nullable=True)
     encrypted_password = Column(String, nullable=False)
+    section = Column(String, default="Private", nullable=False)
     
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
