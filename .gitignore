@@ -4,15 +4,12 @@
 
 # venv
 venv/
-*/venv/*
 venv/*
 
 # pycache
 *.pyc
 *.pyo
 __pycache__/*
-*/__pycache__/*
-*/__pycache__
 
 # User Data
 *.db
