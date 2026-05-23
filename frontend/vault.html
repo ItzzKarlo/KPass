@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vault | KPass</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="vault-page">
+    <div class="navbar">
+      <div class="logo">KPass</div>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="vault-grid">
+      <div class="card">
+        <div class="subtitle" id="formTitle">Add password</div>
+
+        <form id="passwordForm">
+          <input type="hidden" id="entryId">
+          <input type="text" id="websiteName" placeholder="Website Name" required>
+          <input type="url" id="websiteUrl" placeholder="Website URL">
+          <input type="email" id="websiteEmail" placeholder="Website Email">
+          <input type="text" id="websiteUsername" placeholder="Website Username">
+          <input type="password" id="websitePassword" placeholder="Website Password" required>
+
+          <button type="submit" id="saveButton">Save Password</button>
+          <button type="button" class="secondary-btn hidden" id="cancelEditButton">Cancel Edit</button>
+        </form>
+
+        <div id="message" class="message"></div>
+      </div>
+
+      <div>
+        <h2>Your Vault</h2>
+        <div id="vaultList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    const MASKED_PASSWORD = "********";
+    let currentEntries = [];
+
+    if (!getToken()) {
+      window.location.href = "login.html";
+    }
+
+    async function loadVault() {
+      const vaultList = document.getElementById("vaultList");
+      vaultList.innerHTML = "Loading vault...";
+
+      try {
+        const entries = await apiRequest("/vault");
+        currentEntries = entries;
+
+        if (entries.length === 0) {
+          vaultList.innerHTML = "<p>No passwords saved yet.</p>";
+          return;
+        }
+
+        vaultList.innerHTML = entries.map(entry => `
+          <div class="password-card">
+            <h3>${escapeHtml(entry.website_name)}</h3>
+
+            <div class="password-row">
+              <strong>URL:</strong>
+              ${entry.website_url ? `<a class="link" href="${escapeAttr(entry.website_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(entry.website_url)}</a>` : "-"}
+            </div>
+
+            <div class="password-row">
+              <strong>Email:</strong> ${escapeHtml(entry.website_email || "-")}
+            </div>
+
+            <div class="password-row">
+              <strong>Username:</strong> ${escapeHtml(entry.website_username || "-")}
+            </div>
+
+            <div class="password-row">
+              <strong>Password:</strong>
+              <span id="password-${entry.id}" data-password="${escapeAttr(entry.website_password)}">${MASKED_PASSWORD}</span>
+            </div>
+
+            <div class="password-actions">
+              <button class="secondary-btn" onclick="togglePassword(${entry.id})">Show</button>
+              <button class="secondary-btn" onclick="copyPassword(${entry.id})">Copy</button>
+              <button class="secondary-btn" onclick="editEntry(${entry.id})">Edit</button>
+              <button class="danger-btn" onclick="deleteEntry(${entry.id})">Delete</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (err) {
+        vaultList.innerHTML = `<p class="error">${err.message}</p>`;
+
+        if (err.message.includes("Invalid login token")) {
+          logout();
+        }
+      }
+    }
+
+    document.getElementById("passwordForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const message = document.getElementById("message");
+      const entryId = document.getElementById("entryId").value;
+      message.className = "message";
+      message.textContent = entryId ? "Updating password..." : "Saving password...";
+
+      try {
+        await apiRequest(entryId ? `/vault/${entryId}` : "/vault", {
+          method: entryId ? "PUT" : "POST",
+          body: JSON.stringify({
+            website_name: document.getElementById("websiteName").value,
+            website_url: document.getElementById("websiteUrl").value || null,
+            website_email: document.getElementById("websiteEmail").value || null,
+            website_username: document.getElementById("websiteUsername").value || null,
+            website_password: document.getElementById("websitePassword").value
+          })
+        });
+
+        resetForm();
+        message.textContent = entryId ? "Password updated." : "Password saved.";
+        loadVault();
+      } catch (err) {
+        message.className = "message error";
+        message.textContent = err.message;
+      }
+    });
+
+    async function deleteEntry(id) {
+      if (!confirm("Delete this password?")) return;
+
+      await apiRequest(`/vault/${id}`, {
+        method: "DELETE"
+      });
+
+      loadVault();
+    }
+
+    function editEntry(id) {
+      const entry = currentEntries.find(item => item.id === id);
+      if (!entry) return;
+
+      document.getElementById("entryId").value = entry.id;
+      document.getElementById("websiteName").value = entry.website_name;
+      document.getElementById("websiteUrl").value = entry.website_url || "";
+      document.getElementById("websiteEmail").value = entry.website_email || "";
+      document.getElementById("websiteUsername").value = entry.website_username || "";
+      document.getElementById("websitePassword").value = entry.website_password;
+      document.getElementById("formTitle").textContent = "Edit password";
+      document.getElementById("saveButton").textContent = "Update Password";
+      document.getElementById("cancelEditButton").classList.remove("hidden");
+    }
+
+    function resetForm() {
+      document.getElementById("passwordForm").reset();
+      document.getElementById("entryId").value = "";
+      document.getElementById("formTitle").textContent = "Add password";
+      document.getElementById("saveButton").textContent = "Save Password";
+      document.getElementById("cancelEditButton").classList.add("hidden");
+    }
+
+    function togglePassword(id) {
+      const el = document.getElementById(`password-${id}`);
+      const realPassword = el.dataset.password;
+
+      if (el.textContent === MASKED_PASSWORD) {
+        el.textContent = realPassword;
+      } else {
+        el.textContent = MASKED_PASSWORD;
+      }
+    }
+
+    async function copyPassword(id) {
+      const el = document.getElementById(`password-${id}`);
+      await navigator.clipboard.writeText(el.dataset.password);
+      alert("Password copied.");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    document.getElementById("cancelEditButton").addEventListener("click", resetForm);
+    loadVault();
+  </script>
+</body>
+</html>

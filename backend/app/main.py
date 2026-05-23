@@ -1,14 +1,46 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
-from .database import Base, engine, get_db
+from .database import Base, DATABASE_URL, engine, get_db
 from .models import User, PasswordEntry
-from .schemas import UserRegister, UserLogin, PasswordCreate, PasswordOut
+from .schemas import (
+    PasswordCreate,
+    PasswordOut,
+    PasswordUpdate,
+    UserLogin,
+    UserOut,
+    UserRegister,
+)
 from .auth import hash_password, verify_password, create_access_token, get_current_user
 from .crypto import encrypt_text, decrypt_text
 
+
+def ensure_sqlite_schema():
+    if not DATABASE_URL.startswith("sqlite"):
+        return
+
+    inspector = inspect(engine)
+    if "users" not in inspector.get_table_names():
+        return
+
+    user_columns = {column["name"] for column in inspector.get_columns("users")}
+    statements = []
+
+    if "two_factor_enabled" not in user_columns:
+        statements.append("ALTER TABLE users ADD COLUMN two_factor_enabled BOOLEAN NOT NULL DEFAULT 0")
+    if "two_factor_secret" not in user_columns:
+        statements.append("ALTER TABLE users ADD COLUMN two_factor_secret VARCHAR")
+
+    if statements:
+        with engine.begin() as connection:
+            for statement in statements:
+                connection.execute(text(statement))
+
+
 Base.metadata.create_all(bind=engine)
+ensure_sqlite_schema()
 
 app = FastAPI(title="KPass API")
 
@@ -63,6 +95,11 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     }
 
 
+@app.get("/api/auth/me", response_model=UserOut)
+def me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
 @app.get("/api/vault", response_model=list[PasswordOut])
 def get_vault(
     db: Session = Depends(get_db),
@@ -104,6 +141,40 @@ def add_password(
     db.commit()
 
     return {"message": "Password saved successfully"}
+
+
+@app.put("/api/vault/{entry_id}", response_model=PasswordOut)
+def update_password(
+    entry_id: int,
+    data: PasswordUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    entry = db.query(PasswordEntry).filter(
+        PasswordEntry.id == entry_id,
+        PasswordEntry.user_id == current_user.id
+    ).first()
+
+    if not entry:
+        raise HTTPException(status_code=404, detail="Password entry not found")
+
+    entry.website_url = data.website_url
+    entry.website_name = data.website_name
+    entry.website_email = data.website_email
+    entry.website_username = data.website_username
+    entry.encrypted_password = encrypt_text(data.website_password)
+
+    db.commit()
+    db.refresh(entry)
+
+    return PasswordOut(
+        id=entry.id,
+        website_url=entry.website_url,
+        website_name=entry.website_name,
+        website_email=entry.website_email,
+        website_username=entry.website_username,
+        website_password=decrypt_text(entry.encrypted_password)
+    )
 
 
 @app.delete("/api/vault/{entry_id}")

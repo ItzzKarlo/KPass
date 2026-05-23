@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -11,6 +11,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    two_factor_enabled = Column(Boolean, default=False, nullable=False)
+    two_factor_secret = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     passwords = relationship("PasswordEntry", back_populates="owner")
@@ -29,5 +31,4 @@ class PasswordEntry(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     owner = relationship("User", back_populates="passwords")
-    
     

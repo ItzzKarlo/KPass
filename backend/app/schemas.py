@@ -13,12 +13,26 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    username: str
+    two_factor_enabled: bool
+
+    class Config:
+        from_attributes = True
+
+
 class PasswordCreate(BaseModel):
     website_url: Optional[str] = None
     website_name: str
     website_email: Optional[str] = None
     website_username: Optional[str] = None
     website_password: str
+
+
+class PasswordUpdate(PasswordCreate):
+    pass
 
 
 class PasswordOut(BaseModel):

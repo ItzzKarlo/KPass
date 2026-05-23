@@ -1,0 +1,170 @@
+:root {
+    --red: #FF0000;
+    --white: #FFFFFF;
+    --black: #000000;
+    --gold: #CCAC58;
+    --dark: #111111;
+    --gray: #1C1C1C;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--black);
+    color: var(--white);
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--dark);
+    border: 1px solid rgba(204, 172, 88, 0.35);
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
+}
+
+.logo {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--red);
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #cccccc;
+    margin-bottom: 24px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #050505;
+    color: var(--white);
+    font-size: 15px;
+}
+
+    input:focus {
+        outline: none;
+        border-color: var(--gold);
+    }
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    background: var(--red);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+.secondary-btn {
+    background: var(--gold);
+    color: var(--black);
+}
+
+.link {
+    color: var(--gold);
+    text-decoration: none;
+}
+
+.message {
+    margin-top: 14px;
+    color: var(--gold);
+}
+
+.hidden {
+    display: none;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+.vault-page {
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--black);
+    border-bottom: 1px solid rgba(204, 172, 88, 0.35);
+    padding: 18px 24px;
+    margin: -24px -24px 24px -24px;
+}
+
+    .navbar button {
+        width: auto;
+        padding: 10px 16px;
+    }
+
+.vault-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+}
+
+.password-card {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+    .password-card h3 {
+        margin-top: 0;
+        color: var(--gold);
+    }
+
+.password-row {
+    margin: 8px 0;
+    color: #dddddd;
+    word-break: break-all;
+}
+
+.password-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+    .password-actions button {
+        width: auto;
+    }
+
+.danger-btn {
+    background: #8b0000;
+}
+
+@media (max-width: 850px) {
+    .vault-grid {
+        grid-template-columns: 1fr;
+    }
+}

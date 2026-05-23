@@ -1,4 +1,8 @@
-const API_BASE = "http://127.0.0.1:8000/api"
+const API_BASE = window.KPASS_API_BASE || (
+    window.location.protocol === "file:"
+        ? "http://127.0.0.1:8000/api"
+        : `${window.location.origin}/api`
+);
 
 function getToken() {
     return localStorage.getItem("kpass_token");
@@ -16,7 +20,7 @@ function logout() {
 async function apiRequest(path, options = {}) {
     const headers = {
         "Content-Type": "application/json",
-        ...API_BASE(options.headers || {})
+        ...(options.headers || {})
     };
 
     const token = getToken();
@@ -30,7 +34,8 @@ async function apiRequest(path, options = {}) {
         headers
     });
 
-    const data = await response.json(() => ({}));
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
 
     if (!response.ok) {
         throw new Error(data.detail || "Something went wrong");
